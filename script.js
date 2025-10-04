@@ -64,7 +64,6 @@ function crearTeclado() {
             const key = document.createElement('button');
             key.className = 'key';
             key.textContent = keyText;
-            // Corregido: Llamada directa a manejarTecla
             key.onclick = () => manejarTecla(keyText); 
             rowDiv.appendChild(key);
         });
@@ -122,11 +121,13 @@ function comprobarIntento() {
         return;
     }
 
+    // ⭐ CORRECCIÓN: Si la palabra es inválida, no se borra ni se avanza el intento.
     if (!esPalabraValida(palabraActual)) {
-        mostrarMensaje("Palabra no válida en el diccionario.");
-        return;
+        mostrarMensaje("❌ ¡Error! Palabra no válida en el diccionario. Usa DEL para borrar.");
+        return; 
     }
 
+    // Si llegamos aquí, la palabra es válida (está en el diccionario)
     const intento = palabraActual;
     const palabra = palabraSecreta;
     const tiles = document.getElementById('game-board').children[intentoActual].children;
@@ -180,6 +181,7 @@ function comprobarIntento() {
         mostrarMensaje(`🎉 ¡Ganaste en ${intentoActual + 1} intentos! La palabra es ${palabraSecreta}.`);
         juegoTerminado = true;
     } else {
+        // ⭐ Si la palabra es válida pero incorrecta, avanzamos y borramos para el siguiente intento.
         intentoActual++;
         palabraActual = "";
         
@@ -198,7 +200,7 @@ function init() {
     crearTablero();
     crearTeclado();
     
-    // Escucha de teclado físico (CORREGIDA)
+    // Escucha de teclado físico (Completa y Correcta)
     document.addEventListener('keydown', (e) => {
         if (juegoTerminado) return;
         const key = e.key.toUpperCase();

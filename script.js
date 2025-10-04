@@ -23,7 +23,6 @@ function cambiarALongitud6() {
     palabraActual = "";
     juegoTerminado = false;
 
-    // Reinicia la interfaz con 6 letras
     document.getElementById('history-container').innerHTML = '';
     crearTablero(); 
     crearTeclado();
@@ -31,10 +30,9 @@ function cambiarALongitud6() {
 }
 
 
-// --- 2. GESTIÓN DEL TABLERO Y TECLADO (CORREGIDO) ---
+// --- 2. GESTIÓN DEL TABLERO Y TECLADO ---
 
 function crearTablero() {
-    // ⭐ CORREGIDO: Dibuja SOLO la fila ACTIVA
     const currentRowContainer = document.getElementById('current-row');
     currentRowContainer.innerHTML = ''; 
     
@@ -44,12 +42,11 @@ function crearTablero() {
         currentRowContainer.appendChild(tile);
     }
     
-    // Actualizar el contador de intentos
+    // ⭐ CORRECCIÓN: Actualizar contador de intentos restantes
     document.getElementById('intentos-restantes').textContent = MAX_INTENTOS - intentoActual;
 }
 
 function crearTeclado() {
-    // ⭐ CORREGIDO: Se asegura de que el teclado se dibuje
     const keys = [
         ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
         ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Ñ'],
@@ -106,12 +103,11 @@ function mostrarIntentoAnterior(intento, colores) {
         pastRow.appendChild(tile);
     }
     
-    // Añadir el intento al inicio del historial (el más reciente arriba)
     historyContainer.prepend(pastRow);
 }
 
 
-// --- 3. LÓGICA DE JUEGO ---
+// --- 3. LÓGICA DE JUEGO (Comprobación y Retroalimentación) ---
 
 function manejarTecla(key) {
     if (juegoTerminado) return;
@@ -143,18 +139,17 @@ function comprobarIntento() {
         return; 
     }
 
-    // Si la palabra es válida, continúa con la lógica de retroalimentación
     const intento = palabraActual;
     const palabra = palabraSecreta;
     const teclado = document.getElementById('keyboard-container');
     
+    // Lógica de colores (Green, Yellow, Gray)
     const mapaPalabra = {};
     for (const char of palabra) {
         mapaPalabra[char] = (mapaPalabra[char] || 0) + 1;
     }
     const resultadoColores = Array(longitudPalabra).fill('');
 
-    // PASO 1 y 2: Lógica de colores (Green, Yellow, Gray)
     for (let i = 0; i < longitudPalabra; i++) {
         if (intento[i] === palabra[i]) {
             resultadoColores[i] = 'green';
@@ -178,7 +173,6 @@ function comprobarIntento() {
     // Aplicar colores al teclado
     for (let i = 0; i < longitudPalabra; i++) {
         const color = resultadoColores[i];
-        // Buscamos la tecla usando su texto (letra)
         const keyElement = teclado.querySelector(`.key[onclick*="${intento[i]}"]`); 
         if (keyElement) {
             if (keyElement.classList.contains('green') && color !== 'green') continue;
@@ -187,13 +181,14 @@ function comprobarIntento() {
         }
     }
     
-    // Lógica de Ganar/Perder
+    // ⭐ CORRECCIÓN: Lógica de Ganador
     if (palabraActual === palabraSecreta) {
-        mostrarMensaje(`🎉 ¡Ganaste en ${intentoActual + 1} intentos! La palabra es ${palabraSecreta}.`);
+        mostrarMensaje(`🎉 ¡GANASTE! La palabra era: ${palabraSecreta}.`);
         juegoTerminado = true;
     } else {
+        // La palabra es válida pero incorrecta
         intentoActual++;
-        palabraActual = "";
+        palabraActual = ""; // Borra la palabra para el nuevo intento
         
         if (intentoActual >= MAX_INTENTOS) {
             mostrarMensaje(`😞 Fin del juego. La palabra secreta era: **${palabraSecreta}**.`);
@@ -201,7 +196,7 @@ function comprobarIntento() {
         }
     }
     
-    // Redibuja la línea de entrada para el nuevo intento y actualiza contador.
+    // Redibuja la línea de entrada y actualiza el contador de intentos
     crearTablero(); 
 }
 
@@ -210,11 +205,9 @@ function comprobarIntento() {
 
 function init() {
     elegirPalabraSecreta();
-    // ⭐ Llamadas que restauran la interfaz (CORREGIDO)
     crearTablero(); 
     crearTeclado();
     
-    // Escucha de teclado físico
     document.addEventListener('keydown', (e) => {
         if (juegoTerminado) return;
         const key = e.key.toUpperCase();
@@ -229,6 +222,4 @@ function init() {
     });
 }
 
-// ⭐ Ejecución al cargar el script
 init();
-

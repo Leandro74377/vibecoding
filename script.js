@@ -1,4 +1,4 @@
-// --- 1. CONFIGURACIÓN INICIAL Y DICCIONARIO (Ajuste Manual) ---
+// --- 1. CONFIGURACIÓN INICIAL Y DICCIONARIO ---
 const PALABRAS_VALIDAS_5 = ["CODIGO", "JUEGO", "TECLA", "NUBE", "DATOS"];
 const PALABRAS_VALIDAS_6 = ["PYTHON", "JAVAS", "WEBCAM", "REACTO", "ANGULA"]; // Ejemplo de palabras de 6 letras
 
@@ -15,31 +15,27 @@ function elegirPalabraSecreta() {
     longitudPalabra = 5;
 }
 
-// --- LÓGICA DE TIEMPO PARA LA VARIACIÓN (Requerimiento Creativo) ---
-// En una aplicación real, esto se manejaría con un temporizador,
-// pero aquí lo definimos como una función que puedes llamar manualmente.
+// LÓGICA DE TIEMPO PARA LA VARIACIÓN (Si se activa en el reto)
 function cambiarALongitud6() {
-    // Solo si el juego actual no ha terminado
     if (juegoTerminado) return; 
 
+    // Aquí deberías reconfigurar el juego para una nueva palabra de 6
     longitudPalabra = 6;
-    // Debes elegir una nueva palabra de 6 letras y quizás resetear el tablero
-    // o simplemente avisar al jugador para el siguiente juego.
-    
-    // **Importante para el reto:** Si cambias la palabra en medio del juego,
-    // el tablero debe reconfigurarse o el jugador debe empezar de nuevo.
-    // Lo más simple para el reto: Avisar que a partir de ahora la palabra será de 6 letras.
-    mostrarMensaje("¡Alerta! La siguiente palabra será de 6 letras (si fallas este intento).");
+    palabraSecreta = PALABRAS_VALIDAS_6[Math.floor(Math.random() * PALABRAS_VALIDAS_6.length)];
+    intentoActual = 0; 
+    palabraActual = "";
+    juegoTerminado = false;
+
+    crearTablero(); // Redibuja el tablero con 6 casillas
+    mostrarMensaje("¡La palabra secreta es ahora de 6 letras! Nuevo juego iniciado.");
 }
-// Puedes llamar a esta función cuando te queden 20 minutos (40 min desde el inicio).
-// Por ejemplo: setTimeout(cambiarALongitud6, 40 * 60 * 1000); // Esto en el código si fuera un cronómetro.
 
 
-// --- 2. GESTIÓN DEL TABLERO Y TECLADO (Generado por IA y Adaptado) ---
+// --- 2. GESTIÓN DEL TABLERO Y TECLADO ---
 
 function crearTablero() {
     const board = document.getElementById('game-board');
-    board.innerHTML = ''; // Limpiar el tablero
+    board.innerHTML = ''; 
     for (let i = 0; i < MAX_INTENTOS; i++) {
         const row = document.createElement('div');
         row.className = 'row';
@@ -68,7 +64,8 @@ function crearTeclado() {
             const key = document.createElement('button');
             key.className = 'key';
             key.textContent = keyText;
-            key.onclick = () => manejarTecla(keyText);
+            // Corregido: Llamada directa a manejarTecla
+            key.onclick = () => manejarTecla(keyText); 
             rowDiv.appendChild(key);
         });
         keyboardContainer.appendChild(rowDiv);
@@ -94,8 +91,7 @@ function actualizarTablero() {
 function mostrarMensaje(mensaje) {
     const container = document.getElementById('message-container');
     container.textContent = mensaje;
-    // Opcional: limpiar el mensaje después de un tiempo
-    setTimeout(() => container.textContent = '', 2000);
+    setTimeout(() => container.textContent = '', 2500);
 }
 
 
@@ -106,9 +102,9 @@ function manejarTecla(key) {
 
     if (key === 'ENTER') {
         comprobarIntento();
-    } else if (key === 'DEL') {
+    } else if (key === 'DEL' || key === 'BACKSPACE') {
         palabraActual = palabraActual.slice(0, -1);
-    } else if (palabraActual.length < longitudPalabra) {
+    } else if (key.length === 1 && palabraActual.length < longitudPalabra) {
         palabraActual += key;
     }
     
@@ -116,15 +112,8 @@ function manejarTecla(key) {
 }
 
 function esPalabraValida(palabra) {
-    // Si la palabra es de 5 letras, comprueba el diccionario de 5
-    if (palabra.length === 5) {
-        return PALABRAS_VALIDAS_5.includes(palabra);
-    } 
-    // Si la palabra es de 6 letras, comprueba el diccionario de 6
-    else if (palabra.length === 6) {
-        return PALABRAS_VALIDAS_6.includes(palabra);
-    }
-    return false;
+    const diccionario = (longitudPalabra === 5) ? PALABRAS_VALIDAS_5 : PALABRAS_VALIDAS_6;
+    return diccionario.includes(palabra);
 }
 
 function comprobarIntento() {
@@ -143,7 +132,6 @@ function comprobarIntento() {
     const tiles = document.getElementById('game-board').children[intentoActual].children;
     const teclado = document.getElementById('keyboard-container');
     
-    // Usamos un mapa temporal para manejar duplicados (Lógica Wordle)
     const mapaPalabra = {};
     for (const char of palabra) {
         mapaPalabra[char] = (mapaPalabra[char] || 0) + 1;
@@ -161,7 +149,7 @@ function comprobarIntento() {
 
     // PASO 2: Marcar Amarillos (🟡) y Grises (⚫)
     for (let i = 0; i < longitudPalabra; i++) {
-        if (resultadoColores[i] === '') { // Solo si no es verde
+        if (resultadoColores[i] === '') { 
             if (mapaPalabra[intento[i]] > 0) {
                 resultadoColores[i] = 'yellow';
                 mapaPalabra[intento[i]]--;
@@ -176,12 +164,12 @@ function comprobarIntento() {
         const color = resultadoColores[i];
         tiles[i].classList.add(color);
         
-        // Actualizar teclado
-        const keyElement = teclado.querySelector(`button.key:text-content("${intento[i]}")`);
+        // Actualizar teclado (Buscamos la tecla y actualizamos su clase)
+        const keyElement = teclado.querySelector(`.key[onclick*="${intento[i]}"]`);
         if (keyElement) {
-            // Lógica para que el verde/amarillo prevalezca sobre el gris
+            // Lógica de prevalencia: Verde > Amarillo > Gris
             if (keyElement.classList.contains('green') && color !== 'green') continue;
-            if (keyElement.classList.contains('yellow') && (color === 'gray')) continue;
+            if (keyElement.classList.contains('yellow') && color === 'gray') continue;
 
             keyElement.classList.add(color);
         }
@@ -189,14 +177,14 @@ function comprobarIntento() {
     
     // Lógica de Ganar/Perder
     if (palabraActual === palabraSecreta) {
-        mostrarMensaje(`¡Ganaste en ${intentoActual + 1} intentos!`);
+        mostrarMensaje(`🎉 ¡Ganaste en ${intentoActual + 1} intentos! La palabra es ${palabraSecreta}.`);
         juegoTerminado = true;
     } else {
         intentoActual++;
         palabraActual = "";
         
         if (intentoActual >= MAX_INTENTOS) {
-            mostrarMensaje(`Fin del juego. La palabra era: ${palabraSecreta}`);
+            mostrarMensaje(`😞 Fin del juego. La palabra secreta era: **${palabraSecreta}**.`);
             juegoTerminado = true;
         }
     }
@@ -210,24 +198,24 @@ function init() {
     crearTablero();
     crearTeclado();
     
-    // Escucha de teclado físico para mayor accesibilidad
+    // Escucha de teclado físico (CORREGIDA)
     document.addEventListener('keydown', (e) => {
         if (juegoTerminado) return;
         const key = e.key.toUpperCase();
+        
+        // Manejo de letras (A-Z, Ñ)
         if (key.match(/^[A-ZÑ]$/) && key.length === 1) {
             manejarTecla(key);
-        } else if (key === 'ENTER') {
-            manejarTecla('ENTER');
-        } else if (key === 'BACKSPACE') {
+        } 
+        // Manejo de ENTER
+        else if (key === 'ENTER') {
+            manejarTecla('ENTER'); 
+        } 
+        // Manejo de DELETE/BACKSPACE
+        else if (key === 'BACKSPACE') {
             manejarTecla('DEL');
         }
     });
 }
 
 init();
-
-// Si quieres probar el cambio de 5 a 6 letras, llama a esta función:
-// **cambiarALongitud6()**
-
-// Si necesitas resetear el juego (ej: al iniciar una nueva ronda de 6 letras):
-// **intentoActual = 0; juegoTerminado = false; elegirPalabraSecreta(); crearTablero();**

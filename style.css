@@ -1,0 +1,106 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+header {
+    margin: 20px 0;
+    text-align: center;
+}
+
+#game-board {
+    margin-bottom: 20px;
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 5px;
+}
+
+.tile {
+    width: 50px;
+    height: 50px;
+    border: 2px solid #ccc;
+    margin: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* Colores de Retroalimentación */
+.tile.green {
+    background-color: #6aaa64; /* Verde */
+    color: white;
+    border-color: #6aaa64;
+}
+
+.tile.yellow {
+    background-color: #c9b458; /* Amarillo */
+    color: white;
+    border-color: #c9b458;
+}
+
+.tile.gray {
+    background-color: #787c7e; /* Gris */
+    color: white;
+    border-color: #787c7e;
+}
+
+/* Teclado */
+#keyboard-container {
+    margin-top: 20px;
+}
+
+.key-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.key {
+    background-color: #d3d6da;
+    color: #333;
+    padding: 10px 15px;
+    margin: 0 4px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    min-width: 30px;
+    text-align: center;
+    transition: background-color 0.2s;
+}
+
+.key:hover {
+    background-color: #c1c4c8;
+}
+
+.key.green {
+    background-color: #6aaa64;
+    color: white;
+}
+.key.yellow {
+    background-color: #c9b458;
+    color: white;
+}
+.key.gray {
+    background-color: #787c7e;
+    color: white;
+}
+
+/* Mensajes */
+#message-container {
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: red;
+}

@@ -6,38 +6,44 @@ body {
     min-height: 100vh;
     margin: 0;
     
-    /* ⭐ ESTILO NEÓN DE FONDO (Azul-Morado) */
-    background: linear-gradient(135deg, #00ffff 0%, #ff00ff 100%); 
+    /* ⭐ CORRECCIÓN: Fondo Negro Profundo (Para el contraste NEÓN) */
+    background-color: #000000; 
     color: #f0f0f0; 
     padding: 20px;
+    
+    /* ⭐ EFECTO DE LUZ AMBIENTAL NEÓN (Simula el reflejo del humo/piso) */
+    box-shadow: 0 0 100px rgba(0, 255, 255, 0.2) inset, 
+                0 0 100px rgba(255, 0, 255, 0.2) inset;
 }
 
 header {
     margin: 20px 0 40px;
     text-align: center;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
 }
 
 h1 {
     color: #ffffff; 
-    font-size: 3em;
+    font-size: 3.2em;
+    /* Efecto Neón Brillante (Azul y Morado) */
+    text-shadow: 0 0 10px #ff00ff, 0 0 20px #00ffff, 0 0 40px #ff00ff; 
 }
 
 #subtitle {
-    color: #ffffff;
+    color: #00ffff; /* Color de acento cian */
     font-size: 1.2em;
     margin-top: 5px;
+    text-shadow: 0 0 5px #00ffff;
 }
 
-/* ⭐ CONTENEDOR DE JUEGO (Tablero y Historial) */
+/* ⭐ CONTENEDOR DE JUEGO (Historial y Entrada) */
 #history-container {
     width: 90%;
     max-width: 400px;
     margin-bottom: 20px;
     padding: 10px;
-    background-color: rgba(0, 0, 0, 0.4); /* Fondo semi-transparente */
+    background-color: rgba(0, 0, 0, 0.6); /* Transparencia para el efecto oscuro */
     border-radius: 10px;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.3); /* Sombra Morada */
 }
 
 #current-row {
@@ -45,7 +51,11 @@ h1 {
     max-width: 400px;
     margin-bottom: 30px;
     padding: 10px;
-    border-bottom: 3px solid #ffffff; /* Línea de input */
+    /* Línea de input que parece luz neón */
+    border-bottom: 3px solid #00ffff; 
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 5px 5px 0 0;
+    box-shadow: 0 0 10px #00ffff; /* Brillo Neón Cian */
 }
 
 .row {
@@ -57,7 +67,7 @@ h1 {
 .tile {
     width: 60px; 
     height: 60px; 
-    border: none; /* Quitamos los bordes individuales */
+    border: none; 
     margin: 3px;
     display: flex;
     justify-content: center;
@@ -67,27 +77,33 @@ h1 {
     text-transform: uppercase;
     border-radius: 5px;
     
-    background-color: transparent; /* Fondo transparente para el input */
+    background-color: transparent; 
     color: #ffffff;
     box-shadow: none;
     transition: background-color 0.3s, transform 0.1s;
 }
 
-/* ⭐ Colores de Retroalimentación (Alto Contraste) */
+/* Animación de la letra activa */
+.tile:not(.green):not(.yellow):not(.gray):not(:empty) {
+    text-shadow: 0 0 5px #ff00ff;
+}
+
+
+/* ⭐ Colores de Retroalimentación NEÓN */
 .tile.green {
-    background-color: #00ff00; /* Neón Verde */
+    background-color: #00ff00; 
     color: black;
-    box-shadow: 0 0 10px #00ff00;
+    box-shadow: 0 0 10px #00ff00; /* Brillo Verde */
 }
 
 .tile.yellow {
-    background-color: #ffff00; /* Neón Amarillo */
+    background-color: #ffff00; 
     color: black;
-    box-shadow: 0 0 10px #ffff00;
+    box-shadow: 0 0 10px #ffff00; /* Brillo Amarillo */
 }
 
 .tile.gray {
-    background-color: #555555; /* Gris oscuro */
+    background-color: #333333; /* Gris más oscuro para el contraste */
     color: white;
     box-shadow: none;
 }
@@ -104,7 +120,7 @@ h1 {
 }
 
 .key {
-    background-color: #444c56; 
+    background-color: #1a1a1a; /* Teclas casi negras */
     color: #ffffff;
     padding: 15px 12px;
     margin: 0 4px;
@@ -114,27 +130,29 @@ h1 {
     text-transform: uppercase;
     min-width: 35px;
     text-align: center;
-    border: none;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    border: 1px solid #444;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
     transition: background-color 0.1s, transform 0.05s, box-shadow 0.2s;
 }
 
 .key:hover {
-    background-color: #666e7a;
+    background-color: #333333;
+    box-shadow: 0 0 10px #ff00ff; /* Efecto hover morado neón */
 }
 
 /* Teclas especiales NEÓN */
 .key[onclick*="ENTER"], .key[onclick*="DEL"] {
     min-width: 50px;
-    background-color: #ff00ff; /* Morado Neón */
+    background-color: #ff00ff; 
     color: white; 
-    box-shadow: 0 0 10px #ff00ff;
+    box-shadow: 0 0 15px #ff00ff;
+    text-shadow: 0 0 5px white;
 }
 
 /* Teclado con retroalimentación NEÓN */
 .key.green { background-color: #00ff00; color: black; box-shadow: 0 0 10px #00ff00; }
 .key.yellow { background-color: #ffff00; color: black; box-shadow: 0 0 10px #ffff00; }
-.key.gray { background-color: #555555; color: white; box-shadow: none; }
+.key.gray { background-color: #333333; color: white; box-shadow: none; }
 
 /* Mensajes */
 #message-container {
@@ -142,8 +160,9 @@ h1 {
     font-size: 20px;
     font-weight: bold;
     color: #ff4d4d; 
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.9);
     padding: 10px 20px;
     border-radius: 5px;
-    box-shadow: 0 0 10px #ff4d4d;
+    box-shadow: 0 0 15px #ff4d4d;
+    border: 1px solid #ff4d4d;
 }

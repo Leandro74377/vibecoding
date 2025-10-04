@@ -1,6 +1,6 @@
 // --- 1. CONFIGURACIÓN INICIAL Y DICCIONARIO ---
 const PALABRAS_VALIDAS_5 = ["CODIGO", "JUEGO", "TECLA", "NUBE", "DATOS"];
-const PALABRAS_VALIDAS_6 = ["PYTHON", "JAVAS", "WEBCAM", "REACTO", "ANGULA"]; // Ejemplo de palabras de 6 letras
+const PALABRAS_VALIDAS_6 = ["PYTHON", "JAVAS", "WEBCAM", "REACTO", "ANGULA"]; 
 
 let palabraSecreta = "";
 let longitudPalabra = 5;
@@ -9,46 +9,46 @@ let intentoActual = 0;
 let palabraActual = "";
 let juegoTerminado = false;
 
-// Selecciona una palabra inicial de 5 letras
-function elegirPalabraSecreta() {
-    palabraSecreta = PALABRAS_VALIDAS_5[Math.floor(Math.random() * PALABRAS_VALIDAS_5.length)];
-    longitudPalabra = 5;
-}
-
-// LÓGICA DE TIEMPO PARA LA VARIACIÓN (Si se activa en el reto)
-function cambiarALongitud6() {
-    if (juegoTerminado) return; 
-
-    // Aquí deberías reconfigurar el juego para una nueva palabra de 6
-    longitudPalabra = 6;
-    palabraSecreta = PALABRAS_VALIDAS_6[Math.floor(Math.random() * PALABRAS_VALIDAS_6.length)];
-    intentoActual = 0; 
-    palabraActual = "";
-    juegoTerminado = false;
-
-    crearTablero(); // Redibuja el tablero con 6 casillas
-    mostrarMensaje("¡La palabra secreta es ahora de 6 letras! Nuevo juego iniciado.");
-}
+// ... (elegirPalabraSecreta y cambiarALongitud6 - se mantienen igual) ...
 
 
-// --- 2. GESTIÓN DEL TABLERO Y TECLADO ---
+// --- 2. GESTIÓN DEL TABLERO Y TECLADO (ADAPTADO A SINGLE-LINE) ---
 
 function crearTablero() {
-    const board = document.getElementById('game-board');
-    board.innerHTML = ''; 
-    for (let i = 0; i < MAX_INTENTOS; i++) {
-        const row = document.createElement('div');
-        row.className = 'row';
-        for (let j = 0; j < longitudPalabra; j++) {
-            const tile = document.createElement('div');
-            tile.className = 'tile';
-            row.appendChild(tile);
+    // ⭐ Adaptado: Solo crea la fila ACTIVA
+    const currentRowContainer = document.getElementById('current-row');
+    currentRowContainer.innerHTML = ''; 
+    
+    for (let j = 0; j < longitudPalabra; j++) {
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        currentRowContainer.appendChild(tile);
+    }
+    
+    // Actualizar el contador de intentos
+    document.getElementById('intentos-restantes').textContent = MAX_INTENTOS - intentoActual;
+}
+
+function actualizarTablero() {
+    // ⭐ Adaptado: Actualiza SOLO la fila ACTIVA
+    const currentRow = document.getElementById('current-row');
+    if (!currentRow) return;
+
+    for (let i = 0; i < longitudPalabra; i++) {
+        const tile = currentRow.children[i];
+        if (i < palabraActual.length) {
+            tile.textContent = palabraActual[i];
+            // Estilo visual para la letra activa
+            tile.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'; 
+        } else {
+            tile.textContent = '';
+            tile.style.backgroundColor = 'transparent';
         }
-        board.appendChild(row);
     }
 }
 
 function crearTeclado() {
+    // ... (Se mantiene igual) ...
     const keys = [
         ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
         ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Ñ'],
@@ -71,49 +71,33 @@ function crearTeclado() {
     });
 }
 
-function actualizarTablero() {
-    const currentRow = document.getElementById('game-board').children[intentoActual];
-    if (!currentRow) return;
-
-    for (let i = 0; i < longitudPalabra; i++) {
-        const tile = currentRow.children[i];
-        if (i < palabraActual.length) {
-            tile.textContent = palabraActual[i];
-            tile.style.borderColor = '#333';
-        } else {
-            tile.textContent = '';
-            tile.style.borderColor = '#ccc';
-        }
-    }
-}
-
 function mostrarMensaje(mensaje) {
+    // ... (Se mantiene igual) ...
     const container = document.getElementById('message-container');
     container.textContent = mensaje;
     setTimeout(() => container.textContent = '', 2500);
 }
 
+// ⭐ NUEVA FUNCIÓN: Mueve el intento al historial
+function mostrarIntentoAnterior(intento, colores) {
+    const historyContainer = document.getElementById('history-container');
+    const pastRow = document.createElement('div');
+    pastRow.className = 'row';
+
+    for (let i = 0; i < longitudPalabra; i++) {
+        const tile = document.createElement('div');
+        tile.className = `tile ${colores[i]}`;
+        tile.textContent = intento[i];
+        pastRow.appendChild(tile);
+    }
+    
+    historyContainer.appendChild(pastRow);
+}
+
 
 // --- 3. LÓGICA DE JUEGO (Comprobación y Retroalimentación) ---
 
-function manejarTecla(key) {
-    if (juegoTerminado) return;
-
-    if (key === 'ENTER') {
-        comprobarIntento();
-    } else if (key === 'DEL' || key === 'BACKSPACE') {
-        palabraActual = palabraActual.slice(0, -1);
-    } else if (key.length === 1 && palabraActual.length < longitudPalabra) {
-        palabraActual += key;
-    }
-    
-    actualizarTablero();
-}
-
-function esPalabraValida(palabra) {
-    const diccionario = (longitudPalabra === 5) ? PALABRAS_VALIDAS_5 : PALABRAS_VALIDAS_6;
-    return diccionario.includes(palabra);
-}
+// ... (manejarTecla y esPalabraValida - se mantienen iguales) ...
 
 function comprobarIntento() {
     if (palabraActual.length !== longitudPalabra) {
@@ -121,26 +105,22 @@ function comprobarIntento() {
         return;
     }
 
-    // ⭐ CORRECCIÓN: Si la palabra es inválida, no se borra ni se avanza el intento.
     if (!esPalabraValida(palabraActual)) {
         mostrarMensaje("❌ ¡Error! Palabra no válida en el diccionario. Usa DEL para borrar.");
         return; 
     }
 
-    // Si llegamos aquí, la palabra es válida (está en el diccionario)
     const intento = palabraActual;
     const palabra = palabraSecreta;
-    const tiles = document.getElementById('game-board').children[intentoActual].children;
     const teclado = document.getElementById('keyboard-container');
     
+    // ... (Lógica de mapaPalabra y resultadoColores - Se mantiene igual) ...
     const mapaPalabra = {};
     for (const char of palabra) {
         mapaPalabra[char] = (mapaPalabra[char] || 0) + 1;
     }
-    
     const resultadoColores = Array(longitudPalabra).fill('');
 
-    // PASO 1: Marcar Verdes (🟢)
     for (let i = 0; i < longitudPalabra; i++) {
         if (intento[i] === palabra[i]) {
             resultadoColores[i] = 'green';
@@ -148,7 +128,6 @@ function comprobarIntento() {
         }
     }
 
-    // PASO 2: Marcar Amarillos (🟡) y Grises (⚫)
     for (let i = 0; i < longitudPalabra; i++) {
         if (resultadoColores[i] === '') { 
             if (mapaPalabra[intento[i]] > 0) {
@@ -160,18 +139,16 @@ function comprobarIntento() {
         }
     }
     
-    // Aplicar colores al tablero y teclado
+    // ⭐ CAMBIO CLAVE: Mover el intento a la zona de historial
+    mostrarIntentoAnterior(intento, resultadoColores);
+    
+    // Aplicar colores al teclado
     for (let i = 0; i < longitudPalabra; i++) {
         const color = resultadoColores[i];
-        tiles[i].classList.add(color);
-        
-        // Actualizar teclado (Buscamos la tecla y actualizamos su clase)
         const keyElement = teclado.querySelector(`.key[onclick*="${intento[i]}"]`);
         if (keyElement) {
-            // Lógica de prevalencia: Verde > Amarillo > Gris
             if (keyElement.classList.contains('green') && color !== 'green') continue;
             if (keyElement.classList.contains('yellow') && color === 'gray') continue;
-
             keyElement.classList.add(color);
         }
     }
@@ -181,15 +158,16 @@ function comprobarIntento() {
         mostrarMensaje(`🎉 ¡Ganaste en ${intentoActual + 1} intentos! La palabra es ${palabraSecreta}.`);
         juegoTerminado = true;
     } else {
-        // ⭐ Si la palabra es válida pero incorrecta, avanzamos y borramos para el siguiente intento.
         intentoActual++;
-        palabraActual = "";
+        palabraActual = ""; // Borra la palabra para el nuevo intento
         
         if (intentoActual >= MAX_INTENTOS) {
             mostrarMensaje(`😞 Fin del juego. La palabra secreta era: **${palabraSecreta}**.`);
             juegoTerminado = true;
         }
     }
+    
+    crearTablero(); // Redibuja la línea de entrada y actualiza el contador.
 }
 
 
@@ -197,24 +175,19 @@ function comprobarIntento() {
 
 function init() {
     elegirPalabraSecreta();
-    crearTablero();
+    crearTablero(); // Crea la fila activa inicial
     crearTeclado();
     
-    // Escucha de teclado físico (Completa y Correcta)
+    // ... (Escucha de teclado físico - se mantiene igual) ...
     document.addEventListener('keydown', (e) => {
         if (juegoTerminado) return;
         const key = e.key.toUpperCase();
         
-        // Manejo de letras (A-Z, Ñ)
         if (key.match(/^[A-ZÑ]$/) && key.length === 1) {
             manejarTecla(key);
-        } 
-        // Manejo de ENTER
-        else if (key === 'ENTER') {
+        } else if (key === 'ENTER') {
             manejarTecla('ENTER'); 
-        } 
-        // Manejo de DELETE/BACKSPACE
-        else if (key === 'BACKSPACE') {
+        } else if (key === 'BACKSPACE') {
             manejarTecla('DEL');
         }
     });

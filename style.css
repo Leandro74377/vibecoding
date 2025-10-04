@@ -1,29 +1,51 @@
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Consolas', monospace; /* Fuente de terminal para el efecto AI */
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #282c34; /* Fondo oscuro (Gris medianoche) */
-    color: #f0f0f0; /* Texto claro */
+    min-height: 100vh;
+    margin: 0;
+    
+    /* ⭐ ESTILO NEÓN DE FONDO (Azul-Morado) */
+    background: linear-gradient(135deg, #00ffff 0%, #ff00ff 100%); 
+    color: #f0f0f0; 
     padding: 20px;
 }
 
 header {
     margin: 20px 0 40px;
     text-align: center;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
 }
 
 h1 {
-    color: #61dafb; /* Azul cian (típico de interfaces de código) */
-    text-shadow: 0 0 5px rgba(97, 218, 251, 0.5);
+    color: #ffffff; 
+    font-size: 3em;
 }
 
-#game-board {
-    margin-bottom: 30px;
-    padding: 15px;
-    background-color: #383c44; /* Un poco más claro que el fondo */
+#subtitle {
+    color: #ffffff;
+    font-size: 1.2em;
+    margin-top: 5px;
+}
+
+/* ⭐ CONTENEDOR DE JUEGO (Tablero y Historial) */
+#history-container {
+    width: 90%;
+    max-width: 400px;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.4); /* Fondo semi-transparente */
     border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+#current-row {
+    width: 90%;
+    max-width: 400px;
+    margin-bottom: 30px;
+    padding: 10px;
+    border-bottom: 3px solid #ffffff; /* Línea de input */
 }
 
 .row {
@@ -35,7 +57,7 @@ h1 {
 .tile {
     width: 60px; 
     height: 60px; 
-    border: 3px solid #666; /* Borde gris medio */
+    border: none; /* Quitamos los bordes individuales */
     margin: 3px;
     display: flex;
     justify-content: center;
@@ -43,35 +65,31 @@ h1 {
     font-size: 30px; 
     font-weight: 900;
     text-transform: uppercase;
-    transition: transform 0.1s, background-color 0.3s, border-color 0.3s;
     border-radius: 5px;
-    background-color: #ffffff; /* Las casillas son blancas para que resalten */
-    color: #333;
+    
+    background-color: transparent; /* Fondo transparente para el input */
+    color: #ffffff;
+    box-shadow: none;
+    transition: background-color 0.3s, transform 0.1s;
 }
 
-/* Animación al llenar la casilla */
-.tile:not(.green):not(.yellow):not(.gray):not(:empty) {
-    border-color: #61dafb; /* Azul cian */
-}
-
-/* Colores de Retroalimentación */
+/* ⭐ Colores de Retroalimentación (Alto Contraste) */
 .tile.green {
-    background-color: #4CAF50; 
-    color: white;
-    border-color: #4CAF50;
-    transform: scale(1.05);
+    background-color: #00ff00; /* Neón Verde */
+    color: black;
+    box-shadow: 0 0 10px #00ff00;
 }
 
 .tile.yellow {
-    background-color: #FFC107; 
-    color: white;
-    border-color: #FFC107;
+    background-color: #ffff00; /* Neón Amarillo */
+    color: black;
+    box-shadow: 0 0 10px #ffff00;
 }
 
 .tile.gray {
-    background-color: #757575; 
+    background-color: #555555; /* Gris oscuro */
     color: white;
-    border-color: #757575;
+    box-shadow: none;
 }
 
 /* Teclado */
@@ -86,8 +104,8 @@ h1 {
 }
 
 .key {
-    background-color: #444c56; /* Teclas más oscuras */
-    color: #f0f0f0;
+    background-color: #444c56; 
+    color: #ffffff;
     padding: 15px 12px;
     margin: 0 4px;
     border-radius: 8px; 
@@ -97,39 +115,35 @@ h1 {
     min-width: 35px;
     text-align: center;
     border: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    transition: background-color 0.1s, transform 0.05s;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transition: background-color 0.1s, transform 0.05s, box-shadow 0.2s;
 }
 
 .key:hover {
-    background-color: #555c65;
+    background-color: #666e7a;
 }
 
-.key:active {
-    transform: translateY(1px);
-}
-
-/* Teclas especiales */
+/* Teclas especiales NEÓN */
 .key[onclick*="ENTER"], .key[onclick*="DEL"] {
     min-width: 50px;
-    background-color: #61dafb; /* Azul cian para acciones */
-    color: #333; /* Texto oscuro en teclas claras */
-    font-weight: 900;
+    background-color: #ff00ff; /* Morado Neón */
+    color: white; 
+    box-shadow: 0 0 10px #ff00ff;
 }
 
-/* Teclado con retroalimentación */
-.key.green { background-color: #4CAF50; color: white; }
-.key.yellow { background-color: #FFC107; color: white; }
-.key.gray { background-color: #555; color: white; } /* Gris más oscuro para el teclado */
+/* Teclado con retroalimentación NEÓN */
+.key.green { background-color: #00ff00; color: black; box-shadow: 0 0 10px #00ff00; }
+.key.yellow { background-color: #ffff00; color: black; box-shadow: 0 0 10px #ffff00; }
+.key.gray { background-color: #555555; color: white; box-shadow: none; }
 
 /* Mensajes */
 #message-container {
     margin-top: 20px;
     font-size: 20px;
     font-weight: bold;
-    color: #ff4d4d; /* Rojo brillante para mensajes */
-    background-color: #383c44;
+    color: #ff4d4d; 
+    background-color: rgba(0, 0, 0, 0.7);
     padding: 10px 20px;
     border-radius: 5px;
-    box-shadow: 0 0 5px rgba(255, 77, 77, 0.5);
+    box-shadow: 0 0 10px #ff4d4d;
 }
